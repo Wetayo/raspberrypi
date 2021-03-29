@@ -1,11 +1,9 @@
-
 # BLE iBeaconScanner based on https://github.com/adamf/BLE/blob/master/ble-scanner.py
 # JCS 06/07/14
-
+UUID = "77707f98-a4da-451e-859f-5a29fdb8cd15"
+MAJOR = "ffff"
+MINOR = "0123"
 DEBUG = False
-UUID = "77707f98a4da451e859f5a29fdb8cd15"
-MAJOR = 65535
-MINOR = 291
 # BLE scanner based on https://github.com/adamf/BLE/blob/master/ble-scanner.py
 # BLE scanner, based on https://code.google.com/p/pybluez/source/browse/trunk/examples/advanced/inquiry-with-rssi.py
 
@@ -135,11 +133,11 @@ def parse_events(sock, loop_count=100):
         ptype, event, plen = struct.unpack("BBB", pkt[:3])
         #print "--------------" 
         if event == bluez.EVT_INQUIRY_RESULT_WITH_RSSI:
-            i =0
+                i =0
         elif event == bluez.EVT_NUM_COMP_PKTS:
-            i =0 
+                i =0 
         elif event == bluez.EVT_DISCONN_COMPLETE:
-            i =0 
+                i =0 
         elif event == LE_META_EVENT:
             subevent, = struct.unpack("B", pkt[3])
             pkt = pkt[4:]
@@ -150,22 +148,38 @@ def parse_events(sock, loop_count=100):
                 num_reports = struct.unpack("B", pkt[0])[0]
                 report_pkt_offset = 0
                 for i in range(0, num_reports):
-                    if((returnstringpacket(pkt[report_pkt_offset -23 : report_pkt_offset - 7]) == UUID) and (returnnumberpacket(pkt[report_pkt_offset -7: report_pkt_offset - 5]) == MAJOR) and (returnnumberpacket(pkt[report_pkt_offset -5: report_pkt_offset - 3]) == MINOR)):
+		
+		    #if (DEBUG == True):
+			#print "-------------"
+                    	#print "\tfullpacket: ", printpacket(pkt)
+		   # 	print "\tUDID: ", printpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
+		   # 	print "\tMAJOR: ", printpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
+		   # 	print "\tMINOR: ", printpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
+            #        	print "\tMAC address: ", packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
+		    	# commented out - don't know what this byte is.  It's NOT TXPower
+             #       	txpower, = struct.unpack("b", pkt[report_pkt_offset -2])
+              #      	print "\t(Unknown):", txpower
+	
+               #     	rssi, = struct.unpack("b", pkt[report_pkt_offset -1])
+                #    	print "\tRSSI:", rssi
+		    # build the return string
+                    if(pkt[report_pkt_offset -22: report_pkt_offset - 6] == UUID and report_pkt_offset -6: report_pkt_offset -4] == MAJOR and report_pkt_offset -4: report_pkt_offset -2] == MINOR):
                         Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
                         Adstring += ","
-                        Adstring += returnstringpacket(pkt[report_pkt_offset -23 : report_pkt_offset - 7]) 
+                        Adstring += returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6]) 
                         Adstring += ","
-                        Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -7: report_pkt_offset - 5]) 
+                        Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4]) 
                         Adstring += ","
-                        Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -5: report_pkt_offset - 3]) 
+                        Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2]) 
                         Adstring += ","
-                        Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -3])
+                        Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -2])
                         Adstring += ","
                         Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -1])
 
-                        myFullList.append(Adstring) 
-
-	#print "\tAdstring=", Adstring
+                        #print "\tAdstring=", Adstring
+                        myFullList.append(Adstring)
                 done = True
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
     return myFullList
+
+
