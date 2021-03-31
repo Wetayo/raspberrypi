@@ -129,7 +129,7 @@ def parse_events(sock, loop_count=100):
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, flt )
     done = False
     results = []
-    myFullList = []
+    myFullList = False
     for i in range(0, loop_count):
         pkt = sock.recv(255)
         ptype, event, plen = struct.unpack("BBB", pkt[:3])
@@ -151,19 +151,20 @@ def parse_events(sock, loop_count=100):
                 report_pkt_offset = 0
                 for i in range(0, num_reports):
                     if((returnstringpacket(pkt[report_pkt_offset -23 : report_pkt_offset - 7]) == UUID) and (returnnumberpacket(pkt[report_pkt_offset -7: report_pkt_offset - 5]) == MAJOR) and (returnnumberpacket(pkt[report_pkt_offset -5: report_pkt_offset - 3]) == MINOR)):
-                        Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-                        Adstring += ","
-                        Adstring += returnstringpacket(pkt[report_pkt_offset -23 : report_pkt_offset - 7]) 
-                        Adstring += ","
-                        Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -7: report_pkt_offset - 5]) 
-                        Adstring += ","
-                        Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -5: report_pkt_offset - 3]) 
-                        Adstring += ","
-                        Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -3])
-                        Adstring += ","
-                        Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -1])
+                        #Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
+                        #Adstring += ","
+                        #Adstring += returnstringpacket(pkt[report_pkt_offset -23 : report_pkt_offset - 7]) 
+                        #Adstring += ","
+                        #Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -7: report_pkt_offset - 5]) 
+                        #Adstring += ","
+                        #Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -5: report_pkt_offset - 3]) 
+                        #Adstring += ","
+                        #Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -3])
+                        #Adstring += ","
+                        #Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -1])
 
-                        myFullList.append(Adstring) 
+                        #myFullList.append(Adstring)
+                        myFullList = True
 
 	#print "\tAdstring=", Adstring
                 done = True
